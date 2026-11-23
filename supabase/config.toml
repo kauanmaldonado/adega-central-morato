@@ -1,0 +1,3 @@
+# Configuração mínima da Supabase CLI (usada por `supabase link` e `supabase db push`).
+# Os demais parâmetros usam os valores padrão da CLI.
+project_id = "adega-central-morato"

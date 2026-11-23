@@ -1,0 +1,239 @@
+.shell {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: #fff;
+  box-shadow: 0 0 0 1px #dededb;
+  padding-bottom: 130px;
+}
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #ececea;
+}
+.empty {
+  padding: 56px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
+}
+.form {
+  padding: 24px 20px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.step {
+  margin: 0;
+  font-family: var(--font-slab);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+.segment {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  padding: 4px;
+  background: var(--soft);
+  border-radius: 999px;
+}
+.seg,
+.segOn {
+  height: 44px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-2);
+  cursor: pointer;
+}
+.segOn {
+  background: var(--dark);
+  color: #fff;
+}
+.seg:focus-within,
+.segOn:focus-within {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+.addrRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 96px;
+  gap: 10px;
+}
+.pickup {
+  background: var(--soft);
+  border-radius: 22px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13.5px;
+  line-height: 1.45;
+  color: #555552;
+}
+.pickup strong {
+  font-size: 15px;
+  color: var(--ink);
+}
+.payList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pay,
+.payOn {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 60px;
+  padding: 0 18px;
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  cursor: pointer;
+}
+.payOn {
+  border-color: var(--ink);
+}
+.pay input,
+.payOn input {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--dark);
+  margin: 0;
+}
+.pay > span,
+.payOn > span {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 15px;
+}
+.pay .muted,
+.payOn .muted {
+  font-size: 12.5px;
+}
+.summary {
+  background: var(--dark);
+  color: #fff;
+  border-radius: 28px;
+  padding: 22px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.summary hr {
+  border: 0;
+  height: 1px;
+  background: #2a2a2a;
+  margin: 4px 0;
+  width: 100%;
+}
+.sumLine {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 14px;
+  color: #d6d6d2;
+}
+.sumLine > span:last-child {
+  white-space: nowrap;
+}
+.sumMuted {
+  color: #a3a39f;
+  font-size: 12.5px;
+}
+.sumTotal {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-size: 20px;
+  font-weight: 700;
+  padding-top: 4px;
+}
+.submitBar {
+  position: fixed;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  z-index: 30;
+  width: 100%;
+  max-width: 480px;
+  padding: 12px 16px 18px;
+  background: linear-gradient(rgba(255, 255, 255, 0), #fff 30%);
+}
+
+/* ------------------------------------------------------------ pedido enviado */
+.done {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  background: var(--dark);
+  color: #fff;
+  padding: 28px 24px 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+.doneLogo {
+  width: 130px;
+  height: auto;
+}
+.doneBody {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 18px;
+}
+.doneBody p {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  color: #cfcfcb;
+  max-width: 340px;
+}
+.doneCheck {
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.doneTotal {
+  background: #1a1a1a;
+  border-radius: 24px;
+  padding: 16px 18px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 15px;
+  color: #a3a39f;
+}
+.doneTotal strong {
+  color: #fff;
+}
+.doneActions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
