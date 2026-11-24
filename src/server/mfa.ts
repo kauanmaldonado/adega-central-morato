@@ -37,7 +37,7 @@ export async function loadMfaState(supabase: SessionClient): Promise<MfaState | 
     userId: user.id,
     email: user.email ?? null,
     isAdminAccount: !!adminRow,
-    aal: level === "aal1" || level === "aal2" ? level : null,
+    aal: level === "aal2" ? "aal2" : level === "aal1" ? "aal1" : null,
     verifiedFactorId: verified?.id ?? null,
     unverifiedFactorIds: totp.filter((f) => f.status !== "verified").map((f) => f.id),
   };
