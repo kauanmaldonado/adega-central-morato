@@ -6,6 +6,8 @@ import { useState } from "react";
 import { api } from "./api";
 import styles from "./admin.module.css";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "/";
+
 const LINKS = [
   { href: "/admin", label: "Início" },
   { href: "/admin/pedidos", label: "Pedidos" },
@@ -38,7 +40,7 @@ export function AdminNav({ email }: { email: string }) {
           <span>Painel</span>
         </Link>
         <div className={styles.navUser}>
-          <span className={styles.navEmail}>{email}</span>
+          <span className={styles.navEmail} title={email}>{email}</span>
           <button type="button" className="btn btn-sm" style={{ background: "#222", color: "#fff" }} onClick={logout} disabled={leaving}>
             Sair
           </button>
@@ -53,7 +55,10 @@ export function AdminNav({ email }: { email: string }) {
             </Link>
           );
         })}
-        <Link href="/" className={styles.navLink} target="_blank">Ver cardápio ↗</Link>
+        {/* O painel fica em outro endereço: o link aponta para o site dos clientes */}
+        <a href={SITE_URL} className={styles.navLink} target="_blank" rel="noopener noreferrer">
+          Ver cardápio ↗
+        </a>
       </nav>
     </header>
   );

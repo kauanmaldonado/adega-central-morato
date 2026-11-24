@@ -41,25 +41,54 @@
   margin: 0 auto;
 }
 .brand {
+  /* Logo e "Painel" nunca encolhem nem se sobrepõem ao resto */
+  flex: none;
   display: flex;
   align-items: center;
   gap: 12px;
   text-decoration: none;
   font-family: var(--font-serif);
   font-size: 22px;
+  line-height: 1;
+  white-space: nowrap;
+}
+.brand img {
+  flex: none;
+  display: block;
 }
 .navUser {
+  /* Ocupa o espaço que sobra; o e-mail encolhe (com "…") antes de tudo */
+  flex: 1 1 auto;
+  min-width: 0;
   display: flex;
   align-items: center;
+  justify-content: flex-end;
   gap: 12px;
 }
+.navUser button {
+  flex: none;
+}
 .navEmail {
+  min-width: 0;
   font-size: 13px;
   color: #bdbdb8;
   max-width: 220px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .nav {
+    padding: 10px 16px 0;
+  }
+  .brand {
+    gap: 10px;
+    font-size: 20px;
+  }
+  /* No celular não há espaço para o e-mail; o botão Sair continua visível */
+  .navEmail {
+    display: none;
+  }
 }
 .navLinks {
   display: flex;
