@@ -103,8 +103,7 @@ Antes de ter o domínio próprio, você pode usar o endereço temporário do seg
 - [ ] `https://SEU-DOMINIO/admin` mostra **"página não encontrada"** (o painel não existe no endereço do cardápio)
 - [ ] O rodapé do cardápio **não** tem link para o painel
 - [ ] `https://admin.SEU-DOMINIO` abre o login do painel
-- [ ] Primeiro login: depois da senha, aparece o QR code; cadastre o app autenticador no celular e digite o código
-- [ ] Saia e entre de novo: depois da senha, o painel pede o código de 6 dígitos
+- [ ] O administrador entra no painel com e-mail e senha
 - [ ] Cadastrar categoria, produto com preço e foto
 - [ ] Em **Configurações**, cadastrar o número do WhatsApp da loja
 - [ ] Fazer um pedido de teste pelo cardápio, ver o pedido no painel, depois cancelá-lo com o motivo "teste"

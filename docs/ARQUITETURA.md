@@ -82,9 +82,7 @@ Todas as respostas são JSON. Em caso de erro, o formato é sempre:
 | GET | `/api/catalog` | Cardápio ativo + configurações públicas da loja |
 | POST | `/api/orders` | Cria pedido. Body: `customer{name,phone}`, `fulfillment`, `payment_method`, `address?`, `notes?`, `items[{variant_id,quantity}]`. Resposta 201: `order{id,code,subtotal_cents,items}`, `whatsapp_url` |
 | GET | `/api/health` | Saúde do app e do banco |
-| POST | `/api/auth/login` | `{email,password}`. 1ª etapa: cria a sessão (cookie httpOnly, nível `aal1`) se a conta for de administrador e responde `{next:"enroll"\|"verify"}` |
-| POST | `/api/auth/mfa/enroll` | Primeiro acesso: gera o QR code e a chave para cadastrar o app autenticador (só se a conta ainda não tiver um) |
-| POST | `/api/auth/mfa/verify` | `{code, factorId?}`. 2ª etapa: confere o código de 6 dígitos; a sessão passa a `aal2` e o painel é liberado |
+| POST | `/api/auth/login` | `{email,password}`. Cria a sessão (cookie httpOnly) se a conta for de administrador |
 | POST | `/api/auth/logout` | Encerra a sessão |
 
 ### Administração (exigem sessão de administrador)
@@ -111,4 +109,4 @@ Códigos HTTP usados: `201` criado, `401` sem login, `403` sem permissão ou ori
 - Toda rota de administração que altera o cardápio chama `revalidateTag("catalog")`, e a mudança aparece imediatamente.
 - As páginas do painel e todas as respostas de `/api/admin/*` usam `no-store`.
 - `/admin`, `/api/admin/*` e `/api/auth/*` só existem no endereço `ADMIN_HOST`; no endereço do cardápio respondem 404 (`src/lib/admin-host.ts`, aplicado no middleware).
-- O banco só reconhece administradores com sessão `aal2` (senha + código), em `is_admin()`.
+- O banco só reconhece como administrador quem está em `admin_users`, pela função `is_admin()`.

@@ -1,19 +1,14 @@
 import { createSessionClient } from "@/lib/supabase/server";
 import { loginSchema } from "@/lib/validation";
-import { nextLoginStep } from "@/lib/login-step";
 import { ApiError, assertSameOrigin, json, parseJson, route } from "@/server/http";
-import { loadMfaState } from "@/server/mfa";
 import { RateLimiter, clientIp } from "@/server/rate-limit";
 
 const limiter = new RateLimiter(8, 15 * 60_000); // 8 tentativas / 15 min por IP (por instância)
 
 /**
- * POST /api/auth/login — 1ª etapa do login de administrador (e-mail e senha).
- *
- * Responde qual é a próxima etapa:
- *  - "enroll": primeiro acesso — cadastrar o app autenticador (QR code);
- *  - "verify": digitar o código de 6 dígitos do app autenticador.
- * Sem a 2ª etapa a sessão não tem acesso a nenhum dado (o banco exige aal2).
+ * POST /api/auth/login — login de administrador com e-mail e senha.
+ * Cria a sessão (cookie httpOnly) somente se a conta estiver em admin_users;
+ * contas sem permissão são deslogadas na hora.
  */
 export const POST = route(async (req) => {
   assertSameOrigin(req);
@@ -29,12 +24,11 @@ export const POST = route(async (req) => {
     throw new ApiError(401, "invalid_credentials", "E-mail ou senha incorretos.");
   }
 
-  const state = await loadMfaState(supabase);
-  if (!state?.isAdminAccount) {
+  const { data: isAdmin } = await supabase.rpc("is_admin");
+  if (isAdmin !== true) {
     await supabase.auth.signOut();
     throw new ApiError(403, "forbidden", "Esta conta não tem acesso ao painel.");
   }
 
-  const next = nextLoginStep(state);
-  return json({ next: next === "done" ? "verify" : next });
+  return json({ ok: true });
 });

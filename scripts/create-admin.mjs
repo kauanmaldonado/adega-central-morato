@@ -5,16 +5,10 @@
  * Uso (na SUA máquina, nunca na hospedagem):
  *   npm run create-admin -- email@dominio.com
  *   npm run create-admin -- email@dominio.com --reset-password   (troca a senha)
- *   npm run create-admin -- email@dominio.com --reset-mfa        (celular novo/perdido)
  *
  * Lê do .env.local:
  *   NEXT_PUBLIC_SUPABASE_URL
  *   SUPABASE_SERVICE_ROLE_KEY   (chave secreta — só para este script)
- *
- * Verificação em duas etapas: todo administrador entra com senha + código de
- * 6 dígitos de um app autenticador. O app é cadastrado no PRIMEIRO login no
- * painel (QR code). --reset-mfa apaga o app cadastrado, e o próximo login
- * pede um novo cadastro — faça esse login logo em seguida.
  *
  * - Se o e-mail ainda não existe no Supabase Auth, cria o usuário com a senha
  *   digitada (já confirmado) e o marca como administrador.
@@ -28,7 +22,6 @@ const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const email = (process.argv[2] ?? "").trim().toLowerCase();
 const resetPassword = process.argv.includes("--reset-password");
-const resetMfa = process.argv.includes("--reset-mfa");
 
 function fail(msg) {
   console.error(`\n✖ ${msg}\n`);
@@ -92,21 +85,6 @@ if (!user) {
   console.log(`• Usuário já existe: ${email} (senha mantida)`);
 }
 
-if (resetMfa) {
-  const { data, error } = await supabase.auth.admin.mfa.listFactors({ userId: user.id });
-  if (error) fail(`Não foi possível ler a verificação em duas etapas: ${error.message}`);
-  const factors = data?.factors ?? [];
-  for (const factor of factors) {
-    const { error: delError } = await supabase.auth.admin.mfa.deleteFactor({ id: factor.id, userId: user.id });
-    if (delError) fail(`Não foi possível remover o app autenticador: ${delError.message}`);
-  }
-  console.log(
-    factors.length
-      ? `✔ App autenticador removido (${factors.length}). No próximo login, ${email} cadastra um novo lendo o QR code.`
-      : `• ${email} não tinha app autenticador cadastrado.`,
-  );
-}
-
 const { error: adminError } = await supabase
   .from("admin_users")
   .upsert({ user_id: user.id }, { onConflict: "user_id", ignoreDuplicates: true });
@@ -114,4 +92,3 @@ if (adminError) fail(`Não foi possível marcar como administrador: ${adminError
 
 const adminUrl = process.env.ADMIN_HOST ? `https://${process.env.ADMIN_HOST.replace(/^https?:\/\//, "").replace(/\/.*$/, "")}/admin/login` : "/admin/login";
 console.log(`✔ ${email} agora é administrador. Entre em ${adminUrl}`);
-console.log("  No primeiro login, tenha o celular em mãos: o painel pede para cadastrar um app autenticador.\n");

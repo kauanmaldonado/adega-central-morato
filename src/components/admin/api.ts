@@ -31,7 +31,9 @@ export async function api<T>(path: string, init: { method?: string; body?: unkno
   const data = (await res.json().catch(() => null)) as T | ApiErrorBody | null;
   if (!res.ok) {
     const err = data && typeof data === "object" && "error" in data ? (data as ApiErrorBody).error : null;
-    if (res.status === 401) {
+    // Sessão expirada em qualquer tela do painel: volta para o login.
+    // (No próprio login, 401 é "senha incorreta" e a mensagem deve aparecer.)
+    if (res.status === 401 && !path.startsWith("/api/auth/")) {
       window.location.href = "/admin/login";
     }
     throw new ApiClientError(err?.message ?? "Erro inesperado.", res.status, err?.fields ?? {});

@@ -45,17 +45,6 @@ export const loginSchema = z.object({
 });
 export type LoginInput = z.infer<typeof loginSchema>;
 
-/** Código de 6 dígitos do app autenticador (segunda etapa do login). */
-export const mfaVerifySchema = z.object({
-  code: z
-    .string({ required_error: "Digite o código de 6 números.", invalid_type_error: "Digite o código de 6 números." })
-    .transform((v) => v.replace(/\s+/g, ""))
-    .pipe(z.string().regex(/^[0-9]{6}$/, "Digite o código de 6 números.")),
-  // Só no primeiro acesso (cadastro do app autenticador)
-  factorId: uuidSchema.optional(),
-});
-export type MfaVerifyInput = z.infer<typeof mfaVerifySchema>;
-
 // ---------------------------------------------------------------------------
 // Categorias
 // ---------------------------------------------------------------------------

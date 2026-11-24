@@ -13,15 +13,12 @@
 - No endereço do painel, só as rotas do painel respondem. Todo o endereço é marcado para não ser indexado (`robots.txt` com `Disallow: /` e cabeçalho `X-Robots-Tag: noindex, nofollow`).
 - Os cookies de sessão ficam presos ao endereço do painel (sem atributo `Domain`): o site dos clientes nunca os recebe.
 - **Sem `ADMIN_HOST`, o painel fica desativado em produção.**
-- O endereço separado **esconde** o painel, mas a proteção de verdade é o login em duas etapas e as regras do banco abaixo. Mesmo quem descobrir o endereço precisa da senha **e** do código do celular de um administrador.
+- O endereço separado **esconde** o painel, mas a proteção de verdade é o login e as regras do banco abaixo. Mesmo quem descobrir o endereço precisa do e-mail e da senha de um administrador.
 
 ## Autenticação de administradores
 
-- Supabase Auth com e-mail e senha **mais código de 6 dígitos** de um app autenticador (TOTP: Google Authenticator, Microsoft Authenticator, Authy…). Todo o login acontece **no servidor** (`/api/auth/login`, `/api/auth/mfa/enroll`, `/api/auth/mfa/verify`).
-- **O código é exigido pelo banco, não só pela tela.** A função `is_admin()` só é verdadeira quando a sessão passou pela segunda etapa (`aal = 'aal2'` no token do Supabase). Com só a senha (`aal1`), a sessão não lê pedidos nem clientes, não altera o cardápio e não envia imagens: há testes automáticos para isso.
-- **Primeiro acesso:** o painel mostra um QR code para cadastrar o app autenticador. Isso só é possível enquanto a conta ainda não tem app cadastrado. Por isso, faça o primeiro login logo depois de criar o administrador.
-- **Troca de celular:** só pelo script local `npm run create-admin -- email --reset-mfa`, com a chave secreta. Não existe forma de desativar o código pelo site.
-- Tentativas de código limitadas a 10 por IP e 6 por conta a cada 15 min (por instância), somadas aos limites do Supabase Auth.
+- Supabase Auth com e-mail e senha. O login acontece **no servidor** (`/api/auth/login`).
+- **Sem verificação em duas etapas**, por decisão do dono do projeto: quem tiver o e-mail e a senha de um administrador entra no painel. Use uma senha longa e exclusiva (mínimo de 12 caracteres, exigido pelo Supabase) e guarde-a num gerenciador de senhas. Se um dia quiser reativar o código de 6 dígitos, a versão anterior está no histórico do Git (migration `20261123000100_admin_mfa.sql`).
 - Ser usuário do Supabase **não basta**: o acesso exige um registro em `admin_users`, conferido pela função `is_admin()` em três pontos:
   - no login (conta sem permissão é deslogada na hora, antes de pedir o código);
   - em cada página do painel e em cada rota `/api/admin/*` (`requireAdminPage` / `requireAdminApi`);
@@ -48,7 +45,7 @@ RLS está **ativo em todas as tabelas**. Além disso, privilégios desnecessári
 | `order_items`, `order_events` | — | — | Lê |
 | `admin_users` | — | Vê só o próprio registro | Vê só o próprio registro |
 
-**Administrador** = registro em `admin_users` **e** sessão com o código de 6 dígitos confirmado (`aal2`). Um administrador que só digitou a senha é tratado como "usuário logado sem ser admin".
+**Administrador** = usuário logado com registro em `admin_users`.
 
 Regras extras garantidas no banco:
 - Ninguém, nem o administrador, insere pedidos diretamente na tabela nem altera subtotal ou itens de um pedido.
@@ -80,10 +77,9 @@ O sistema guarda nome, telefone e endereço de entrega dos clientes, apenas para
 
 ## Testes de segurança incluídos
 
-`npm run test:db` aplica as migrations num PostgreSQL descartável e executa **78 verificações**. Entre elas:
+`npm run test:db` aplica as migrations num PostgreSQL descartável e executa **66 verificações**. Entre elas:
 - o visitante não lê clientes, pedidos ou administradores e não altera nada;
 - usuário logado sem ser admin não vê pedidos nem altera configurações;
-- administrador que só digitou a senha (sem o código de 6 dígitos) não vê pedidos nem clientes, não altera o cardápio e não envia imagens;
 - preço adulterado pelo navegador é ignorado;
 - itens inativos não podem ser comprados;
 - pedido concluído não volta de status;
@@ -94,9 +90,7 @@ Também foi feito um teste de mutação: ao abrir uma brecha de propósito (pol�
 ## Checklist de produção
 
 - [ ] "Allow new users to sign up" **desativado** no Supabase Auth
-- [ ] TOTP (App Authenticator) **ativado** em Authentication → Multi-Factor
 - [ ] `ADMIN_HOST` definido e o painel **abrindo só** nesse endereço (no endereço do cardápio, `/admin` dá 404)
-- [ ] Todos os administradores fizeram o primeiro login e cadastraram o app autenticador
 - [ ] Senha mínima de 12 caracteres no Supabase Auth
 - [ ] `SUPABASE_SERVICE_ROLE_KEY` **não** cadastrada na hospedagem (Hostinger/Vercel)
 - [ ] Nenhum `.env*` com valores reais no repositório
@@ -109,6 +103,5 @@ Também foi feito um teste de mutação: ao abrir uma brecha de propósito (pol�
 ## Limitações conhecidas
 
 - O limite de requisições por IP dentro do app vale **por instância** da Vercel. Os limites que valem para tudo são os do banco (pedidos por telefone) e os do Supabase Auth (login). Para limite global por IP, use a Vercel Firewall.
-- Não há redefinição de senha nem troca do app autenticador pelo próprio site: use `npm run create-admin -- email --reset-password` ou `--reset-mfa` (na sua máquina). É intencional: assim, quem roubar uma senha não consegue trocar o código.
-- Quem tiver a senha de um administrador que **ainda não cadastrou** o app autenticador poderia cadastrar o próprio celular. Por isso, faça o primeiro login logo depois de criar cada administrador.
+- Não há redefinição de senha pelo próprio site: troque pelo painel do Supabase (Authentication → Users) ou com `npm run create-admin -- email --reset-password` (na sua máquina).
 - A taxa de entrega é combinada pelo WhatsApp e registrada manualmente no pedido. Não há cálculo automático por endereço.

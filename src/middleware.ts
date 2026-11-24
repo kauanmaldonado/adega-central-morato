@@ -11,9 +11,9 @@ import { decideHost } from "@/lib/admin-host";
  * 2. Redireciona para o domínio oficial do cardápio (CANONICAL_HOST), se
  *    configurado — nunca o endereço do painel.
  * 3. Nas rotas do painel, renova a sessão do Supabase e manda para o login
- *    quem não estiver autenticado. A verificação de ADMINISTRADOR (incluindo
- *    o código de 6 dígitos) acontece no servidor (layout do painel e cada rota
- *    /api/admin) e no banco (RLS exige sessão aal2).
+ *    quem não estiver autenticado. A verificação de ADMINISTRADOR acontece no
+ *    servidor (layout do painel e cada rota /api/admin) e no banco (RLS com
+ *    is_admin()).
  */
 export async function middleware(request: NextRequest) {
   const host = request.headers.get("x-forwarded-host") ?? request.headers.get("host");

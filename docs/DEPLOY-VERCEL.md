@@ -42,7 +42,6 @@ git grep -nE "service_role|sb_secret_|eyJhbGci" -- . ':!docs' ':!.env.example' |
 Supabase → **Authentication → URL Configuration**:
 - **Site URL:** `https://<projeto>.vercel.app` (ou o domínio próprio, quando houver).
 - **Redirect URLs:** adicione o mesmo endereço e o endereço do painel (`ADMIN_HOST`).
-- **Authentication → Multi-Factor:** TOTP (App Authenticator) ativado.
 
 ## 4. Conferir o deploy
 
@@ -52,7 +51,7 @@ Supabase → **Authentication → URL Configuration**:
 | Cardápio | Abrir `/` | Logo e "Cardápio em preparação" ou os produtos |
 | Painel escondido | Abrir `/admin` no endereço do cardápio | Página "não encontrada" (404) |
 | Painel protegido | Abrir o endereço do painel (`ADMIN_HOST`) sem login | Leva a `/admin/login` |
-| Login em duas etapas | Entrar com o administrador | Pede senha e depois o código de 6 dígitos (no 1º acesso, o QR code) |
+| Login | Entrar com o administrador | Painel "Início" |
 | API protegida | Abrir `https://ADMIN_HOST/api/admin/orders` numa aba anônima | `401` com `"unauthenticated"` |
 | Cadastro | Criar categoria e produto com foto | Aparece no cardápio em segundos |
 | Pedido | Fazer um pedido de teste | Aparece em Pedidos com número; o botão abre o WhatsApp |

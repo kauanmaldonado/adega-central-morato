@@ -39,7 +39,6 @@ grant execute on all functions in schema test to anon, authenticated;
 create function test.as_anon() returns void language sql as $$
   select set_config('request.jwt.claims', '{"role":"anon"}', false);
 $$;
--- aal1 = só senha; aal2 = senha + código do app autenticador
 create function test.as_user(uid uuid, aal text default 'aal1') returns void language sql as $$
   select set_config('request.jwt.claims', json_build_object('sub', uid, 'role', 'authenticated', 'aal', aal)::text, false);
 $$;
@@ -183,44 +182,10 @@ end $$;
 reset role;
 
 -- =============================================================================
--- 3. Administrador que entrou SÓ com a senha (sem o código de 6 dígitos)
+-- 3. Administrador (login com e-mail e senha)
 -- =============================================================================
 set role authenticated;
-select test.as_user('00000000-0000-0000-0000-00000000000a', 'aal1');
-
-select test.ok(not public.is_admin(), 'admin sem o código (aal1) não é tratado como admin');
-select test.ok((select count(*) from public.admin_users) = 1, 'admin sem o código consegue confirmar que a conta é de administrador');
-select test.ok((select count(*) from public.orders) = 0, 'admin sem o código não vê pedidos');
-select test.ok((select count(*) from public.customers) = 0, 'admin sem o código não vê clientes');
-select test.ok((select count(*) from public.products) = 1, 'admin sem o código só vê o cardápio público');
-select test.fails($$insert into public.categories (name, slug) values ('Sem código', 'sem-codigo')$$, 'admin sem o código não cria categoria', '42501');
-select test.fails($$select public.admin_save_product('{"variants":[{}]}'::jsonb)$$, 'admin sem o código não salva produto', 'auth:forbidden');
-select test.fails($$insert into storage.objects (bucket_id, name) values ('product-images', 'products/20000000-0000-0000-0000-000000000001/x.jpg')$$,
-                  'admin sem o código não envia imagem', '42501');
-
-do $$
-declare n int;
-begin
-  update public.store_settings set is_open = false;
-  get diagnostics n = row_count;
-  perform test.ok(n = 0, 'admin sem o código não altera configurações');
-  update public.orders set status = 'confirmado';
-  get diagnostics n = row_count;
-  perform test.ok(n = 0, 'admin sem o código não altera pedidos');
-end $$;
-
--- Usuário comum com aal2 continua sem acesso (o código não substitui a lista de admins)
-select test.as_user('00000000-0000-0000-0000-00000000000b', 'aal2');
-select test.ok(not public.is_admin(), 'usuário comum com verificação em duas etapas continua sem acesso');
-select test.ok((select count(*) from public.orders) = 0, 'usuário comum com aal2 não vê pedidos');
-
-reset role;
-
--- =============================================================================
--- 4. Administrador com verificação em duas etapas concluída (aal2)
--- =============================================================================
-set role authenticated;
-select test.as_user('00000000-0000-0000-0000-00000000000a', 'aal2');
+select test.as_user('00000000-0000-0000-0000-00000000000a');
 
 select test.ok(public.is_admin(), 'admin é reconhecido');
 select test.ok((select count(*) from public.categories) = 2, 'admin vê todas as categorias');

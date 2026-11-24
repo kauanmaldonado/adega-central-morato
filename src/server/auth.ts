@@ -9,11 +9,7 @@ export interface AdminContext {
   user: User;
 }
 
-/**
- * Retorna o usuário logado E administrador, ou null.
- * O banco só confirma is_admin() para sessões que passaram pelo código de
- * 6 dígitos (aal2), então isto também garante a segunda etapa do login.
- */
+/** Retorna o usuário logado E administrador (registrado em admin_users), ou null. */
 export async function getAdmin(): Promise<AdminContext | null> {
   const supabase = await createSessionClient();
   const {
@@ -40,8 +36,7 @@ export async function requireAdminApi(): Promise<AdminContext> {
 /** Para páginas do painel: redireciona para o login se não for administrador. */
 export async function requireAdminPage(): Promise<AdminContext> {
   const admin = await getAdmin();
-  // Sem sessão, sem o código de 6 dígitos ou sem permissão: a tela de login
-  // descobre qual etapa falta.
+  // Sem sessão ou sem permissão: volta para o login.
   if (!admin) redirect("/admin/login");
   return admin;
 }

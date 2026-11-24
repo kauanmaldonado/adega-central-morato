@@ -13,7 +13,7 @@ Aplicação web da Adega Central Morato. O cliente monta o pedido no cardápio e
 |---|---|
 | Cardápio público (`/`) | Busca, filtro por categoria, ofertas, mais pedidos, novidades, opções de tamanho/sabor, carrinho |
 | Checkout (`/checkout`) | Dados do cliente, entrega ou retirada, forma de pagamento, observações. O pedido é **gravado no banco** e gera a mensagem pronta para o WhatsApp |
-| Painel (endereço próprio, ex. `admin.seudominio.com.br`) | Login de administrador com senha **e código de 6 dígitos** (app autenticador), invisível para os clientes, resumo do dia, pedidos (filtros, status, taxa de entrega, cancelamento com motivo, histórico), produtos (CRUD, opções e preços, ofertas, fotos), categorias (CRUD, ordem, ativar/desativar), configurações da loja (WhatsApp, horário, endereço, pedido mínimo, formas de pagamento, loja aberta/fechada) |
+| Painel (endereço próprio, ex. `admin.seudominio.com.br`) | Login de administrador com e-mail e senha, invisível para os clientes, resumo do dia, pedidos (filtros, status, taxa de entrega, cancelamento com motivo, histórico), produtos (CRUD, opções e preços, ofertas, fotos), categorias (CRUD, ordem, ativar/desativar), configurações da loja (WhatsApp, horário, endereço, pedido mínimo, formas de pagamento, loja aberta/fechada) |
 
 O banco começa vazio. **Nenhum produto ou preço de exemplo é criado**: tudo é cadastrado pelo painel.
 
@@ -54,7 +54,6 @@ O passo a passo completo está em [docs/INSTALACAO.md](docs/INSTALACAO.md).
 | `npm test` | Testes unitários (validação, dinheiro, telefone, WhatsApp, erros, limitador) |
 | `npm run test:db` | Testes do banco: migrations, RLS e regras de negócio num PostgreSQL descartável |
 | `npm run create-admin -- email` | Cria ou promove um administrador (usa a chave secreta local) |
-| `npm run create-admin -- email --reset-mfa` | Libera o cadastro de um novo app autenticador (celular trocado ou perdido) |
 
 ## Estrutura
 
